@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../models/list_model.dart';
+import '../models/location_model.dart';
+import '../services/database_service.dart';
 
 class LocationInputWidget extends StatefulWidget {
   final TextEditingController latitudeController = TextEditingController();
@@ -12,6 +15,9 @@ class LocationInputWidget extends StatefulWidget {
 class _LocationInputWidgetState extends State<LocationInputWidget> {
   List<String> dropdownItems = ['Option 1', 'Option 2', 'Option 3'];
   String? selectedItem;
+
+  final DatabaseService _databaseService = DatabaseService();
+  // List<String> photoPaths = []; // Uncomment if you have photo functionality
 
   @override
   Widget build(BuildContext context) {
@@ -153,9 +159,7 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                           color: Colors.black,
                         ),
                       ),
-                      onPressed: () {
-                        // Functionality for "Save" button
-                      },
+                      onPressed: _saveLocation,
                       child: Text('Save'),
                     ),
                   ],
@@ -165,6 +169,57 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _saveLocation() async {
+    final listName = selectedItem;
+    final name = widget.nameController.text;
+    final latitudeText = widget.latitudeController.text;
+    final longitudeText = widget.longitudeController.text;
+
+    if (listName == null || name.isEmpty || latitudeText.isEmpty || longitudeText.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all fields')),
+      );
+      return; // Don't save if fields are missing
+    }
+
+    final latitude = double.tryParse(latitudeText);
+    final longitude = double.tryParse(longitudeText);
+
+    if (latitude == null || longitude == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid latitude or longitude')),
+      );
+      return; // Don't save if coordinates are invalid
+    }
+
+    // Get or create the list ID
+    int listId = await _databaseService.getListIdByName(listName);
+    if (listId == 0) {
+      // Create the list if it doesn't exist
+      await _databaseService.insertList(ListModel(name: listName));
+      listId = await _databaseService.getListIdByName(listName);
+    }
+
+    final location = LocationModel(
+      listId: listId,
+      name: name,
+      latitude: latitude,
+      longitude: longitude,
+      // photoPaths: photoPaths, // Add this if you have photo paths
+    );
+
+    await _databaseService.insertLocation(location);
+
+    // Clear the text fields
+    widget.nameController.clear();
+    widget.latitudeController.clear();
+    widget.longitudeController.clear();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Location saved')),
     );
   }
 

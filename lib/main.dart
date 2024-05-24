@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sharemap_frontend/screens/home_screen.dart';
+import 'package:sharemap_frontend/widgets/permission_handler_widget.dart';
 
 Future<void> main() async {
   try {
@@ -20,7 +21,11 @@ class ShareMap extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'ShareMap',
-      home: HomeScreen(), // Hier wird die HomeScreen-Klasse verwendet
+
+      // Location can be used if accepted the first time, but the app has to be restarted because geolocator throws an error on the first attempt.
+      home: PermissionHandlerWidget(
+        child: HomeScreen(), // Hier wird die HomeScreen-Klasse verwendet
+      ),
     );
   }
 }
