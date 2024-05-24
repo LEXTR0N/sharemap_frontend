@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sharemap_frontend/screens/settings_screen.dart';
 import '../bloc/home_screen/home_bloc.dart';
-import '../bloc/home_screen/home_event.dart';
-import '../bloc/home_screen/home_state.dart';
+import '../services/database_repository.dart';
 import '../widgets/lists_widget.dart';
 import '../widgets/map_view.dart';
 import '../widgets/bottom_nav_item.dart';
@@ -11,10 +10,11 @@ import '../widgets/floating_action_button.dart';
 import '../widgets/location_input_widget.dart';
 
 class HomeScreen extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HomeBloc(),
+      create: (context) => HomeBloc(DatabaseRepository()),
       child: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           return Scaffold(
@@ -44,8 +44,8 @@ class HomeScreen extends StatelessWidget {
                   child: GestureDetector(
                     onTap: () => context.read<HomeBloc>().add(
                         state is LocationSelectedState
-                            ? InitialHomeStateEvent()
-                            : LocationSelectedEvent()),
+                            ? HomeInitialEvent()  // Updated event name
+                            : LocationSelected()),  // Updated event name
                     child: BottomNavItem(
                       icon: Icons.location_on,
                       text: 'Location',
@@ -57,8 +57,8 @@ class HomeScreen extends StatelessWidget {
                   child: GestureDetector(
                     onTap: () => context.read<HomeBloc>().add(
                         state is ListSelectedState
-                            ? InitialHomeStateEvent()
-                            : ListSelectedEvent()),
+                            ? HomeInitialEvent()   // Updated event name
+                            : ListSelected()),  // Updated event name
                     child: BottomNavItem(
                       icon: Icons.menu,
                       text: 'Lists',

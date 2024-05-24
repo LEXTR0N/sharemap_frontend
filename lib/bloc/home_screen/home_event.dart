@@ -1,5 +1,8 @@
+part of 'home_bloc.dart';
+
 abstract class HomeEvent {}
 
-class LocationSelectedEvent extends HomeEvent {}
-class ListSelectedEvent extends HomeEvent {}
-class InitialHomeStateEvent extends HomeEvent {}
+class LocationSelected extends HomeEvent {}
+class ListSelected extends HomeEvent {}
+class HomeInitialEvent extends HomeEvent {}
+class FetchLists extends HomeEvent {}

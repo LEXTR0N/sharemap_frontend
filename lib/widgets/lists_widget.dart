@@ -1,47 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ListsWidget extends StatefulWidget {
-  const ListsWidget({super.key});
+import '../bloc/home_screen/home_bloc.dart';
 
-  @override
-  State<ListsWidget> createState() => _ListsWidgetState();
-}
-
-class _ListsWidgetState extends State<ListsWidget> {
+class ListsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-        child: SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height / 2,
-            ),
-            child: IntrinsicHeight(
-              child: Container(
-                padding: EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // TODO: Add your list content here
-                    Text(
-                      'Your List Content Goes Here',
-                      style: TextStyle(fontSize: 24),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+    return BlocBuilder<HomeBloc, HomeState>(
+      builder: (context, state) {
+        if (state is ListsLoaded) {
+          return ListView.builder(
+            itemCount: state.lists.length,
+            itemBuilder: (context, index) {
+              final list = state.lists[index];
+              return ListTile(
+                title: Text(list.name),
+                // Add onTap functionality to navigate to a details screen for the list
+                onTap: () {
+                  // TODO: Implement navigation to list details screen
+                },
+              );
+            },
+          );
+        } else if (state is HomeError) {
+          return Center(child: Text('Error: ${state.error}'));
+        } else {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
     );
   }
 }
