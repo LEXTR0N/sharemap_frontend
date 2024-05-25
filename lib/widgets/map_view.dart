@@ -15,6 +15,7 @@ class _MapViewState extends State<MapView> {
   final LatLng initialLocation = LatLng(37.4219983, -122.084);
   final LocationService _locationService = LocationService();
   LatLng? _currentLocation; // Store current location
+  MapController _mapController = MapController();
 
   @override
   void initState() {
@@ -22,7 +23,17 @@ class _MapViewState extends State<MapView> {
     _locationService.getPositionStream().listen((Position position) {
       setState(() {
         _currentLocation = LatLng(position.latitude, position.longitude);
+        _mapController.move(_currentLocation!, 13.0); // Move map to current location
       });
+      print('Current location: ${position.latitude}, ${position.longitude}');
+    });
+    // Initial location fetch
+    _locationService.getCurrentPosition().then((Position position) {
+      setState(() {
+        _currentLocation = LatLng(position.latitude, position.longitude);
+        _mapController.move(_currentLocation!, 13.0); // Move map to current location
+      });
+      print('Initial location: ${position.latitude}, ${position.longitude}');
     });
   }
 
@@ -34,6 +45,7 @@ class _MapViewState extends State<MapView> {
     }
 
     return FlutterMap(
+      mapController: _mapController,
       options: MapOptions(
         center: _currentLocation ?? initialLocation,
         // Center on current location if available
@@ -60,14 +72,16 @@ class _MapViewState extends State<MapView> {
         height: 80,
         child: FlutterLogo(),
       ),
-      Marker(
-        point: _currentLocation ?? initialLocation,
-        // Use current location or fallback
-        width: 80,
-        height: 80,
-        child: Icon(Icons.person_pin_circle,
-            size: 40, color: Colors.blue), // Customize marker
-      ),
+      if (_currentLocation != null)
+        Marker(
+          point: _currentLocation!,
+          // Use current location or fallback
+          width: 80,
+          height: 80,
+          child: Icon(Icons.person_pin_circle,
+              size: 40, color: Colors.blue), // Customize marker
+        ),
     ];
   }
 }
+
