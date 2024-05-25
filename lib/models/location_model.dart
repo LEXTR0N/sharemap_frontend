@@ -1,39 +1,40 @@
 class LocationModel {
   final int? id;
+  final int listId;
   final String name;
-  final List<String> photos; // List of photo paths (you might change this based on your storage strategy)
   final double latitude;
   final double longitude;
-  final int listId;
+  final List<String> photoPaths;
 
   LocationModel({
     this.id,
+    required this.listId,
     required this.name,
-    this.photos = const [],
     required this.latitude,
     required this.longitude,
-    required this.listId,
+    this.photoPaths = const [],
   });
 
+  // Convert a LocationModel to a Map
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'listId': listId,
       'name': name,
-      'photos': photos.join(','), // Store photos as a comma-separated string
       'latitude': latitude,
       'longitude': longitude,
-      'listId': listId,
+      // We'll store photoPaths separately in the Photos table
     };
   }
 
+  // Create a LocationModel from a Map
   factory LocationModel.fromMap(Map<String, dynamic> map) {
     return LocationModel(
       id: map['id'],
+      listId: map['listId'],
       name: map['name'],
-      photos: (map['photos'] as String?)?.split(',') ?? [],
       latitude: map['latitude'],
       longitude: map['longitude'],
-      listId: map['listId'],
     );
   }
 }
