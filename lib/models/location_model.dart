@@ -1,40 +1,53 @@
-class LocationModel {
-  final int? id;
-  final int listId;
-  final String name;
-  final double latitude;
-  final double longitude;
-  final List<String> photoPaths;
+class Location {
+  String name;
+  double latitude;
+  double longitude;
+  List<String> photos;
 
-  LocationModel({
-    this.id,
-    required this.listId,
+  Location({
     required this.name,
     required this.latitude,
     required this.longitude,
-    this.photoPaths = const [],
+    required this.photos,
   });
 
-  // Convert a LocationModel to a Map
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'listId': listId,
-      'name': name,
-      'latitude': latitude,
-      'longitude': longitude,
-      // We'll store photoPaths separately in the Photos table
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'latitude': latitude,
+    'longitude': longitude,
+    'photos': photos,
+  };
+}
 
-  // Create a LocationModel from a Map
-  factory LocationModel.fromMap(Map<String, dynamic> map) {
-    return LocationModel(
-      id: map['id'],
-      listId: map['listId'],
-      name: map['name'],
-      latitude: map['latitude'],
-      longitude: map['longitude'],
-    );
-  }
+class ListModel {
+  String name;
+  List<String> sharedWithEmails;
+  List<Location> locations;
+
+  ListModel({
+    required this.name,
+    required this.sharedWithEmails,
+    required this.locations,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'sharedWithEmails': sharedWithEmails,
+    'locations': locations.map((location) => location.toJson()).toList(),
+  };
+}
+
+class Owner {
+  String email;
+  List<ListModel> lists;
+
+  Owner({
+    required this.email,
+    required this.lists,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'email': email,
+    'lists': lists.map((list) => list.toJson()).toList(),
+  };
 }

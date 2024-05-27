@@ -11,6 +11,8 @@ class PermissionHandlerWidget extends StatefulWidget {
 }
 
 class _PermissionHandlerWidgetState extends State<PermissionHandlerWidget> {
+  bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -18,12 +20,22 @@ class _PermissionHandlerWidgetState extends State<PermissionHandlerWidget> {
   }
 
   Future<void> requestLocationPermission() async {
-    final status = await Permission.location.request();
-    print('Permission status: $status');
+    await Permission.location.request();
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return widget.child;
   }
 }

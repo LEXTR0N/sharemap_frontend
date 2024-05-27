@@ -40,6 +40,7 @@ dependencies:
   sqflite: ^2.0.0
   geolocator: ^8.0.1 # Aktuelle Version des Pakets einfügen
   permission_handler: ^10.0.0
+  path_provider: ^2.0.14  # Aktuellste Version verwenden
 
 dev_dependencies:
   flutter_test:

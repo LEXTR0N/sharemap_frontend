@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sharemap_frontend/screens/settings_screen.dart';
 import '../bloc/home_screen/home_bloc.dart';
-import '../services/database_repository.dart';
 import '../widgets/lists_widget.dart';
 import '../widgets/map_view.dart';
 import '../widgets/bottom_nav_item.dart';
@@ -14,7 +13,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HomeBloc(DatabaseRepository()),
+      create: (context) => HomeBloc(),
       child: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           return Scaffold(

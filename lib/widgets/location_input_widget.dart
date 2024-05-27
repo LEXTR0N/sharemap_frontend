@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../models/list_model.dart';
+import 'package:geolocator/geolocator.dart';
 import '../models/location_model.dart';
-import '../services/database_service.dart';
+import '../services/save_location_service.dart';
+
 
 class LocationInputWidget extends StatefulWidget {
   final TextEditingController latitudeController = TextEditingController();
@@ -15,21 +16,19 @@ class LocationInputWidget extends StatefulWidget {
 class _LocationInputWidgetState extends State<LocationInputWidget> {
   List<String> dropdownItems = ['Option 1', 'Option 2', 'Option 3'];
   String? selectedItem;
-
-  final DatabaseService _databaseService = DatabaseService();
-  // List<String> photoPaths = []; // Uncomment if you have photo functionality
+  final SaveLocationService locationService = SaveLocationService();
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-        child: SingleChildScrollView( // Wrap the content for scrolling
-          child: ConstrainedBox( // Constrain the size of the widget
+        child: SingleChildScrollView(
+          child: ConstrainedBox(
             constraints: BoxConstraints(
               minHeight: MediaQuery.of(context).size.height / 2,
             ),
-            child: IntrinsicHeight( // Allow the widget to take up the full viewport height
+            child: IntrinsicHeight(
               child: Container(
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -37,7 +36,7 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min, // Important for scrolling
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text('Name:', style: TextStyle(fontSize: 16)),
@@ -68,7 +67,7 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
-                                filled: true, // Fill the background
+                                filled: true,
                                 fillColor: Colors.grey[300],
                               ),
                               items: dropdownItems.map((String value) {
@@ -81,7 +80,6 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                                 setState(() {
                                   selectedItem = newValue;
                                 });
-                                // Handle dropdown selection
                               },
                             ),
                           ),
@@ -111,9 +109,7 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                         padding: EdgeInsets.symmetric(vertical: 15),
                         textStyle: TextStyle(fontSize: 16),
                       ),
-                      onPressed: () {
-                        // Functionality for "Current Location" button
-                      },
+                      onPressed: _getCurrentLocation,
                       child: Text('Current Location'),
                     ),
                     SizedBox(height: 20),
@@ -172,55 +168,41 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
     );
   }
 
-  Future<void> _saveLocation() async {
-    final listName = selectedItem;
-    final name = widget.nameController.text;
-    final latitudeText = widget.latitudeController.text;
-    final longitudeText = widget.longitudeController.text;
-
-    if (listName == null || name.isEmpty || latitudeText.isEmpty || longitudeText.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
+  void _getCurrentLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
       );
-      return; // Don't save if fields are missing
+      setState(() {
+        widget.latitudeController.text = position.latitude.toString();
+        widget.longitudeController.text = position.longitude.toString();
+      });
+    } catch (e) {
+      print("Error getting current location: $e");
     }
+  }
 
-    final latitude = double.tryParse(latitudeText);
-    final longitude = double.tryParse(longitudeText);
-
-    if (latitude == null || longitude == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid latitude or longitude')),
-      );
-      return; // Don't save if coordinates are invalid
-    }
-
-    // Get or create the list ID
-    int listId = await _databaseService.getListIdByName(listName);
-    if (listId == 0) {
-      // Create the list if it doesn't exist
-      await _databaseService.insertList(ListModel(name: listName));
-      listId = await _databaseService.getListIdByName(listName);
-    }
-
-    final location = LocationModel(
-      listId: listId,
-      name: name,
-      latitude: latitude,
-      longitude: longitude,
-      // photoPaths: photoPaths, // Add this if you have photo paths
+  void _saveLocation() {
+    final ownerEmail = 'owner@example.com'; // Placeholder email
+    final owner = Owner(
+      email: ownerEmail,
+      lists: [
+        ListModel(
+          name: selectedItem ?? 'Unnamed List',
+          sharedWithEmails: [], // Add logic to populate shared emails
+          locations: [
+            Location(
+              name: widget.nameController.text,
+              latitude: double.tryParse(widget.latitudeController.text) ?? 0.0,
+              longitude: double.tryParse(widget.longitudeController.text) ?? 0.0,
+              photos: [], // Add logic to populate photos
+            ),
+          ],
+        ),
+      ],
     );
 
-    await _databaseService.insertLocation(location);
-
-    // Clear the text fields
-    widget.nameController.clear();
-    widget.latitudeController.clear();
-    widget.longitudeController.clear();
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Location saved')),
-    );
+    locationService.saveOwner(owner);
   }
 
   void _showAddItemDialog() {
