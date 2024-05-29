@@ -22,7 +22,9 @@ class LocationService {
       return null; // Return null if permission is permanently denied
     }
 
-    return await Geolocator.getCurrentPosition();
+    Position position = await Geolocator.getCurrentPosition();
+    print('Current POSITION: ${position.latitude}, ${position.longitude}');
+    return position;
   }
 
   Stream<Position?> getPositionStream() {

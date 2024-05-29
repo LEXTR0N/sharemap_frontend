@@ -15,9 +15,26 @@ class LocationInputWidget extends StatefulWidget {
 }
 
 class _LocationInputWidgetState extends State<LocationInputWidget> {
-  List<String> dropdownItems = ['Option 1', 'Option 2', 'Option 3'];
+  List<String> dropdownItems = [];
   String? selectedItem;
   final SaveLocationService locationService = SaveLocationService();
+  Owner owner = Owner(lists: []);
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOwner();
+  }
+
+  Future<void> _loadOwner() async {
+    final loadedOwner = await locationService.loadOwner();
+    if (loadedOwner != null) {
+      setState(() {
+        owner = loadedOwner;
+        dropdownItems = owner.lists.map((list) => list.name).toList();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -126,6 +143,7 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                       height: 60,
                       child: TextField(
                         controller: widget.latitudeController,
+                        keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: inputFieldColor,
@@ -143,6 +161,7 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                       height: 60,
                       child: TextField(
                         controller: widget.longitudeController,
+                        keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: inputFieldColor,
@@ -193,24 +212,42 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
   }
 
   void _saveLocation() {
-    final ownerEmail = 'owner@example.com'; // Placeholder email
-    final owner = Owner(
-      email: ownerEmail,
-      lists: [
+    if (widget.nameController.text.isEmpty ||
+        widget.latitudeController.text.isEmpty ||
+        widget.longitudeController.text.isEmpty ||
+        selectedItem == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill in all fields')),
+      );
+      return;
+    }
+
+    if (double.tryParse(widget.latitudeController.text) == null ||
+        double.tryParse(widget.longitudeController.text) == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Latitude and Longitude must be valid numbers')),
+      );
+      return;
+    }
+
+    final location = Location(
+      name: widget.nameController.text,
+      latitude: double.parse(widget.latitudeController.text),
+      longitude: double.parse(widget.longitudeController.text),
+      photos: [], // Add logic to populate photos
+    );
+
+    final listIndex = owner.lists.indexWhere((list) => list.name == selectedItem);
+    if (listIndex >= 0) {
+      owner.lists[listIndex].locations.add(location);
+    } else {
+      owner.lists.add(
         ListModel(
           name: selectedItem ?? 'Unnamed List',
-          sharedWithEmails: [], // Add logic to populate shared emails
-          locations: [
-            Location(
-              name: widget.nameController.text,
-              latitude: double.tryParse(widget.latitudeController.text) ?? 0.0,
-              longitude: double.tryParse(widget.longitudeController.text) ?? 0.0,
-              photos: [], // Add logic to populate photos
-            ),
-          ],
+          locations: [location],
         ),
-      ],
-    );
+      );
+    }
 
     locationService.saveOwner(owner);
   }

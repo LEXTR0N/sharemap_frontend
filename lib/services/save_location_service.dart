@@ -15,6 +15,7 @@ class SaveLocationService {
 
     final jsonString = jsonEncode(owner.toJson());
     await file.writeAsString(jsonString);
+    print('Location successfully saved!');
   }
 
   Future<Owner?> loadOwner() async {
@@ -25,23 +26,7 @@ class SaveLocationService {
       if (await file.exists()) {
         final jsonString = await file.readAsString();
         final jsonMap = jsonDecode(jsonString);
-        return Owner(
-          email: jsonMap['email'],
-          lists: (jsonMap['lists'] as List).map((list) {
-            return ListModel(
-              name: list['name'],
-              sharedWithEmails: List<String>.from(list['sharedWithEmails']),
-              locations: (list['locations'] as List).map((location) {
-                return Location(
-                  name: location['name'],
-                  latitude: location['latitude'],
-                  longitude: location['longitude'],
-                  photos: List<String>.from(location['photos']),
-                );
-              }).toList(),
-            );
-          }).toList(),
-        );
+        return Owner.fromJson(jsonMap);
       }
     } catch (e) {
       print('Error loading owner data: $e');
