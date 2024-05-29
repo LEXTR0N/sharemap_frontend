@@ -17,7 +17,6 @@ class HomeScreen extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final backgroundColor = themeProvider.isDarkMode ? Color(0xFF212121) : Colors.white;
 
-
     return BlocProvider(
       create: (context) => HomeBloc(),
       child: BlocBuilder<HomeBloc, HomeState>(

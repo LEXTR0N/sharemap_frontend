@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../models/location_model.dart';
 import '../providers/theme_provider.dart';
 import '../services/save_location_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/home_screen/home_bloc.dart';
 
 class LocationInputWidget extends StatefulWidget {
   final TextEditingController latitudeController = TextEditingController();
@@ -217,7 +219,10 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
         widget.longitudeController.text.isEmpty ||
         selectedItem == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill in all fields')),
+        SnackBar(
+          content: Text('Please fill in all fields'),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
@@ -225,7 +230,10 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
     if (double.tryParse(widget.latitudeController.text) == null ||
         double.tryParse(widget.longitudeController.text) == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Latitude and Longitude must be valid numbers')),
+        SnackBar(
+          content: Text('Latitude and Longitude must be valid numbers'),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
@@ -249,7 +257,10 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
       );
     }
 
-    locationService.saveOwner(owner);
+    locationService.saveOwner(owner).then((_) {
+      print('Location successfully saved!');
+      context.read<HomeBloc>().add(HomeInitialEvent()); // Close the widget
+    });
   }
 
   void _showAddItemDialog() {
