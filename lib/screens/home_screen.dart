@@ -2,18 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:sharemap_frontend/screens/settings_screen.dart';
+import 'package:latlong2/latlong.dart';
 import '../bloc/home_screen/home_bloc.dart';
 import '../providers/theme_provider.dart';
 import '../widgets/lists_widget.dart';
 import '../widgets/map_view.dart';
 import '../widgets/bottom_nav_item.dart';
-import '../widgets/floating_action_button.dart';
 import '../widgets/location_input_widget.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  LatLng? _selectedLocation;
+
+  void _showSelectedLocation(LatLng location) {
+    setState(() {
+      _selectedLocation = location;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-
     final themeProvider = Provider.of<ThemeProvider>(context);
     final backgroundColor = themeProvider.isDarkMode ? Color(0xFF212121) : Colors.white;
 
@@ -25,17 +37,20 @@ class HomeScreen extends StatelessWidget {
             appBar: null,
             body: Stack(
               children: [
-                MapView(),
+                MapView(selectedLocation: _selectedLocation),
                 Positioned(
                   top: 40.0,
                   right: 16.0,
-                  child: Container(
-                    child: GestureDetector(
-                      onTap: () => Navigator.push(
+                  child: SizedBox(
+                    height: 65.0, // Adjust the size as needed
+                    width: 65.0,  // Adjust the size as needed
+                    child: FloatingActionButton(
+                      onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => SettingsScreen()),
                       ),
-                      child: FloatingActionButtonWidget(icon: Icons.settings),
+                      child: Icon(Icons.settings),
+                      backgroundColor: backgroundColor,
                     ),
                   ),
                 ),
@@ -91,7 +106,7 @@ class HomeScreen extends StatelessWidget {
         child: Center( // Zentriere den Inhalt horizontal
           child: state is LocationSelectedState
               ? LocationInputWidget()
-              : ListsWidget(), // Verwende ListsWidget für den Listen-Zustand
+              : ListsWidget(onShowLocation: _showSelectedLocation), // Verwende ListsWidget für den Listen-Zustand
         ),
       ),
     );

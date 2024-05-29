@@ -21,6 +21,7 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
   String? selectedItem;
   final SaveLocationService locationService = SaveLocationService();
   Owner owner = Owner(lists: []);
+  List<String> photos = [];
 
   @override
   void initState() {
@@ -74,8 +75,8 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                           fillColor: inputFieldColor,
                           hintText: 'Enter name',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10), // Rounded corners
-                            borderSide: BorderSide.none, // No border
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
                           ),
                         ),
                       ),
@@ -93,8 +94,8 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                                 filled: true,
                                 fillColor: inputFieldColor,
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10), // Rounded corners
-                                  borderSide: BorderSide.none, // No border
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide.none,
                                 ),
                               ),
                               items: dropdownItems.map((String value) {
@@ -124,18 +125,6 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                         padding: EdgeInsets.symmetric(vertical: 15),
                         textStyle: TextStyle(fontSize: 16),
                       ),
-                      onPressed: () {
-                        // Functionality for "Add Photos" button
-                      },
-                      child: Text('Add Photos'),
-                    ),
-                    SizedBox(height: 20),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: buttonColor,
-                        padding: EdgeInsets.symmetric(vertical: 15),
-                        textStyle: TextStyle(fontSize: 16),
-                      ),
                       onPressed: _getCurrentLocation,
                       child: Text('Current Location'),
                     ),
@@ -151,8 +140,8 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                           fillColor: inputFieldColor,
                           hintText: 'Enter latitude',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10), // Rounded corners
-                            borderSide: BorderSide.none, // No border
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
                           ),
                         ),
                       ),
@@ -169,8 +158,8 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                           fillColor: inputFieldColor,
                           hintText: 'Enter longitude',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10), // Rounded corners
-                            borderSide: BorderSide.none, // No border
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
                           ),
                         ),
                       ),
@@ -242,7 +231,7 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
       name: widget.nameController.text,
       latitude: double.parse(widget.latitudeController.text),
       longitude: double.parse(widget.longitudeController.text),
-      photos: [], // Add logic to populate photos
+      photos: photos,
     );
 
     final listIndex = owner.lists.indexWhere((list) => list.name == selectedItem);

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
-import '../bloc/capital_city/capital_city_bloc.dart';
-import '../bloc/capital_city/capital_city_state.dart';
 import '../providers/theme_provider.dart';
 import '../services/location_service.dart';
-import '../widgets/floating_action_button.dart';
 
 class MapView extends StatefulWidget {
+  final LatLng? selectedLocation;
+
+  const MapView({Key? key, this.selectedLocation}) : super(key: key);
+
   @override
   _MapViewState createState() => _MapViewState();
 }
@@ -21,11 +21,15 @@ class _MapViewState extends State<MapView> {
   LatLng? _currentLocation; // Store current location
   MapController _mapController = MapController();
   bool _mapInitialized = false; // Flag to check if the map has been centered initially
+  LatLng? _selectedLocation; // Add this variable
 
   @override
   void initState() {
     super.initState();
     _initializeLocation();
+    if (widget.selectedLocation != null) {
+      _selectedLocation = widget.selectedLocation;
+    }
   }
 
   void _initializeLocation() async {
@@ -34,8 +38,10 @@ class _MapViewState extends State<MapView> {
       if (position != null) {
         setState(() {
           _currentLocation = LatLng(position.latitude, position.longitude);
-          _mapController.move(_currentLocation!, 13.0); // Move map to current location
-          _mapInitialized = true;
+          if (!_mapInitialized) {
+            _mapController.move(_currentLocation!, 13.0); // Move map to current location
+            _mapInitialized = true;
+          }
         });
         print('Initial location: ${position.latitude}, ${position.longitude}');
       }
@@ -57,54 +63,26 @@ class _MapViewState extends State<MapView> {
         ? "https://api.tomtom.com/map/1/tile/basic/night/{z}/{x}/{y}.png?key=$apiKey"
         : "https://api.tomtom.com/map/1/tile/basic/main/{z}/{x}/{y}.png?key=$apiKey";
 
-    return Scaffold(
-      body: BlocBuilder<CapitalCityBloc, CapitalCityState>(
-        builder: (context, state) {
-          LatLng? cityLocation;
-          if (state is CapitalCityLoaded && state.selectedCity != null) {
-            cityLocation = LatLng(state.selectedCity!.latitude, state.selectedCity!.longitude);
-            _mapController.move(cityLocation, 13.0);
-          }
-          return FlutterMap(
-            mapController: _mapController,
-            options: MapOptions(
-              center: cityLocation ?? _currentLocation ?? initialLocation,
-              zoom: 13.0,
-            ),
-            children: [
-              TileLayer(
-                urlTemplate: tileLayerUrl,
-                additionalOptions: {"apiKey": apiKey},
-              ),
-              MarkerLayer(
-                markers: _buildMarkers(cityLocation),
-              ),
-            ],
-          );
-        },
+    return FlutterMap(
+      mapController: _mapController,
+      options: MapOptions(
+        center: _selectedLocation ?? _currentLocation ?? initialLocation,
+        zoom: 13.0,
       ),
-
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (_currentLocation != null) {
-            _mapController.move(_currentLocation!, 13.0);
-          }
-        },
-        child: Icon(Icons.my_location),
-        backgroundColor: backgroundColor,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      children: [
+        TileLayer(
+          urlTemplate: tileLayerUrl,
+          additionalOptions: {"apiKey": apiKey},
+        ),
+        MarkerLayer(
+          markers: _buildMarkers(),
+        ),
+      ],
     );
   }
 
-  List<Marker> _buildMarkers(LatLng? cityLocation) {
+  List<Marker> _buildMarkers() {
     final markers = <Marker>[
-      Marker(
-        point: initialLocation,
-        width: 80,
-        height: 80,
-        child: FlutterLogo(),
-      ),
       if (_currentLocation != null)
         Marker(
           point: _currentLocation!,
@@ -112,17 +90,14 @@ class _MapViewState extends State<MapView> {
           height: 80,
           child: Icon(Icons.person_pin_circle, size: 40, color: Colors.blue),
         ),
-    ];
-    if (cityLocation != null) {
-      markers.add(
+      if (_selectedLocation != null)
         Marker(
-          point: cityLocation,
+          point: _selectedLocation!,
           width: 80,
           height: 80,
           child: Icon(Icons.location_on, size: 40, color: Colors.red),
         ),
-      );
-    }
+    ];
     return markers;
   }
 }
