@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 import 'package:sharemap_frontend/screens/home_screen.dart';
+import 'package:sharemap_frontend/services/capital_city_service.dart';
 import 'package:sharemap_frontend/widgets/permission_handler_widget.dart';
+import 'package:sharemap_frontend/bloc/capital_city/capital_city_bloc.dart';
+import 'package:sharemap_frontend/providers/theme_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,16 +22,30 @@ Future<void> main() async {
     print("Could not load .env file: $e");
   }
 
-  runApp(ShareMap());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ThemeProvider(),
+      child: ShareMap(),
+    ),
+  );
 }
 
 class ShareMap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ShareMap',
-      home: PermissionHandlerWidget(
-        child: HomeScreen(), // HomeScreen is shown if permission is granted
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => CapitalCityBloc(CapitalCityService()),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'ShareMap',
+        theme: themeProvider.isDarkMode ? ThemeData.dark() : ThemeData.light(),
+        home: PermissionHandlerWidget(
+          child: HomeScreen(), // HomeScreen is shown if permission is granted
+        ),
       ),
     );
   }

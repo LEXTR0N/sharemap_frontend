@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-
+import 'package:provider/provider.dart';
+import '../bloc/capital_city/capital_city_bloc.dart';
+import '../bloc/capital_city/capital_city_state.dart';
+import '../providers/theme_provider.dart';
 import '../services/location_service.dart';
+import '../widgets/floating_action_button.dart';
 
 class MapView extends StatefulWidget {
   @override
@@ -26,7 +30,7 @@ class _MapViewState extends State<MapView> {
 
   void _initializeLocation() async {
     try {
-      Position? position = await _locationService.getCurrentPosition();
+      var position = await _locationService.getCurrentPosition();
       if (position != null) {
         setState(() {
           _currentLocation = LatLng(position.latitude, position.longitude);
@@ -47,23 +51,39 @@ class _MapViewState extends State<MapView> {
       return Center(child: Text('API Key not found!'));
     }
 
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final backgroundColor = themeProvider.isDarkMode ? Color(0xFF212121) : Colors.white;
+    final tileLayerUrl = themeProvider.isDarkMode
+        ? "https://api.tomtom.com/map/1/tile/basic/night/{z}/{x}/{y}.png?key=$apiKey"
+        : "https://api.tomtom.com/map/1/tile/basic/main/{z}/{x}/{y}.png?key=$apiKey";
+
     return Scaffold(
-      body: FlutterMap(
-        mapController: _mapController,
-        options: MapOptions(
-          center: _currentLocation ?? initialLocation,
-          zoom: 13.0,
-        ),
-        children: [
-          TileLayer(
-            urlTemplate: "https://api.tomtom.com/map/1/tile/basic/main/{z}/{x}/{y}.png?key={apiKey}",
-            additionalOptions: {"apiKey": apiKey},
-          ),
-          MarkerLayer(
-            markers: _buildMarkers(),
-          ),
-        ],
+      body: BlocBuilder<CapitalCityBloc, CapitalCityState>(
+        builder: (context, state) {
+          LatLng? cityLocation;
+          if (state is CapitalCityLoaded && state.selectedCity != null) {
+            cityLocation = LatLng(state.selectedCity!.latitude, state.selectedCity!.longitude);
+            _mapController.move(cityLocation, 13.0);
+          }
+          return FlutterMap(
+            mapController: _mapController,
+            options: MapOptions(
+              center: cityLocation ?? _currentLocation ?? initialLocation,
+              zoom: 13.0,
+            ),
+            children: [
+              TileLayer(
+                urlTemplate: tileLayerUrl,
+                additionalOptions: {"apiKey": apiKey},
+              ),
+              MarkerLayer(
+                markers: _buildMarkers(cityLocation),
+              ),
+            ],
+          );
+        },
       ),
+
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (_currentLocation != null) {
@@ -71,13 +91,14 @@ class _MapViewState extends State<MapView> {
           }
         },
         child: Icon(Icons.my_location),
+        backgroundColor: backgroundColor,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
-  List<Marker> _buildMarkers() {
-    return [
+  List<Marker> _buildMarkers(LatLng? cityLocation) {
+    final markers = <Marker>[
       Marker(
         point: initialLocation,
         width: 80,
@@ -92,5 +113,16 @@ class _MapViewState extends State<MapView> {
           child: Icon(Icons.person_pin_circle, size: 40, color: Colors.blue),
         ),
     ];
+    if (cityLocation != null) {
+      markers.add(
+        Marker(
+          point: cityLocation,
+          width: 80,
+          height: 80,
+          child: Icon(Icons.location_on, size: 40, color: Colors.red),
+        ),
+      );
+    }
+    return markers;
   }
 }

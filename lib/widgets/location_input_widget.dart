@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
 import '../models/location_model.dart';
+import '../providers/theme_provider.dart';
 import '../services/save_location_service.dart';
-
 
 class LocationInputWidget extends StatefulWidget {
   final TextEditingController latitudeController = TextEditingController();
@@ -20,6 +21,11 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final backgroundColor = themeProvider.isDarkMode ? Color(0xFF212121) : Colors.white;
+    final inputFieldColor = themeProvider.isDarkMode ? Color(0xFF3D3D3D) : Colors.grey[200];
+    final buttonColor = themeProvider.isDarkMode ? Color(0xFF3D3D3D) : Colors.grey[300];
+
     return Center(
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
@@ -32,7 +38,7 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
               child: Container(
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: backgroundColor,
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Column(
@@ -46,10 +52,11 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                         controller: widget.nameController,
                         decoration: InputDecoration(
                           filled: true,
-                          fillColor: Colors.grey[200],
+                          fillColor: inputFieldColor,
                           hintText: 'Enter name',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(10), // Rounded corners
+                            borderSide: BorderSide.none, // No border
                           ),
                         ),
                       ),
@@ -64,11 +71,12 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                               value: selectedItem,
                               decoration: InputDecoration(
                                 labelText: 'List',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
                                 filled: true,
-                                fillColor: Colors.grey[300],
+                                fillColor: inputFieldColor,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10), // Rounded corners
+                                  borderSide: BorderSide.none, // No border
+                                ),
                               ),
                               items: dropdownItems.map((String value) {
                                 return DropdownMenuItem<String>(
@@ -93,7 +101,7 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                     SizedBox(height: 20),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[300],
+                        backgroundColor: buttonColor,
                         padding: EdgeInsets.symmetric(vertical: 15),
                         textStyle: TextStyle(fontSize: 16),
                       ),
@@ -105,7 +113,7 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                     SizedBox(height: 20),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[300],
+                        backgroundColor: buttonColor,
                         padding: EdgeInsets.symmetric(vertical: 15),
                         textStyle: TextStyle(fontSize: 16),
                       ),
@@ -120,10 +128,11 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                         controller: widget.latitudeController,
                         decoration: InputDecoration(
                           filled: true,
-                          fillColor: Colors.grey[200],
+                          fillColor: inputFieldColor,
                           hintText: 'Enter latitude',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(10), // Rounded corners
+                            borderSide: BorderSide.none, // No border
                           ),
                         ),
                       ),
@@ -136,10 +145,11 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                         controller: widget.longitudeController,
                         decoration: InputDecoration(
                           filled: true,
-                          fillColor: Colors.grey[200],
+                          fillColor: inputFieldColor,
                           hintText: 'Enter longitude',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(10), // Rounded corners
+                            borderSide: BorderSide.none, // No border
                           ),
                         ),
                       ),

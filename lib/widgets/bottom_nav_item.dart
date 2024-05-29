@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/theme_provider.dart';
 
 class BottomNavItem extends StatelessWidget {
   final IconData icon;
@@ -13,11 +16,15 @@ class BottomNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final backgroundColor = themeProvider.isDarkMode ? Color(0xFF212121) : Colors.white;
+
     return Container(
       width: 70,
       height: 70,
       decoration: BoxDecoration(
-        color: isSelected ? Colors.blue.withOpacity(0.7) : Colors.white,
+        color: isSelected ? Colors.blue.withOpacity(0.7) : backgroundColor,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
