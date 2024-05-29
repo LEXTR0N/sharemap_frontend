@@ -154,7 +154,9 @@ class _ListsWidgetState extends State<ListsWidget> {
                 ),
               ),
               ElevatedButton(
-                onPressed: () => widget.onShowLocation(LatLng(location.latitude, location.longitude)),
+                onPressed: () {
+                  widget.onShowLocation(LatLng(location.latitude, location.longitude));
+                },
                 child: Icon(Icons.location_on),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
@@ -173,12 +175,13 @@ class _ListsWidgetState extends State<ListsWidget> {
         selectedList!.locations.remove(location);
         if (selectedList!.locations.isEmpty) {
           owner.lists.remove(selectedList);
-          showLocations = false;
-          selectedList = null;
         }
-        selectedLocation = null;
       });
       await locationService.saveOwner(owner);
+      // Close overlay if all locations are removed
+      if (owner.lists.isEmpty) {
+        Navigator.pop(context);  // Close the overlay
+      }
     }
   }
 }

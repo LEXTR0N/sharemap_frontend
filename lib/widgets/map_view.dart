@@ -27,9 +27,6 @@ class _MapViewState extends State<MapView> {
   void initState() {
     super.initState();
     _initializeLocation();
-    if (widget.selectedLocation != null) {
-      _selectedLocation = widget.selectedLocation;
-    }
   }
 
   void _initializeLocation() async {
@@ -43,11 +40,25 @@ class _MapViewState extends State<MapView> {
             _mapInitialized = true;
           }
         });
-        print('Initial location: ${position.latitude}, ${position.longitude}');
       }
     } catch (error) {
       print('Error fetching initial location: $error');
     }
+  }
+
+  @override
+  void didUpdateWidget(MapView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selectedLocation != null && widget.selectedLocation != _selectedLocation) {
+      showSelectedLocation(widget.selectedLocation!);
+    }
+  }
+
+  void showSelectedLocation(LatLng location) {
+    setState(() {
+      _selectedLocation = location;
+    });
+    _mapController.move(_selectedLocation!, 15.0);
   }
 
   @override
