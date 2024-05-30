@@ -1,6 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:latlong2/latlong.dart'; // Importing the latlong2 package
+import 'package:latlong2/latlong.dart';
 import '../models/location_model.dart';
 import '../providers/theme_provider.dart';
 import '../services/capitals_service.dart';
@@ -9,7 +10,7 @@ import '../services/save_location_service.dart';
 class ListsWidget extends StatefulWidget {
   final Function(LatLng) onShowLocation;
 
-  const ListsWidget({Key? key, required this.onShowLocation}) : super(key: key);
+  const ListsWidget({super.key, required this.onShowLocation});
 
   @override
   _ListsWidgetState createState() => _ListsWidgetState();
@@ -51,22 +52,24 @@ class _ListsWidgetState extends State<ListsWidget> {
         owner.lists.add(europeanCapitals);
       });
     } catch (e) {
-      print(e.toString());
+      if (kDebugMode) {
+        print(e.toString());
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final backgroundColor = themeProvider.isDarkMode ? Color(0xFF212121) : Colors.white;
-    final inputFieldColor = themeProvider.isDarkMode ? Color(0xFF3D3D3D) : Colors.grey[200] ?? Colors.grey;
+    final backgroundColor = themeProvider.isDarkMode ? const Color(0xFF212121) : Colors.white;
+    final inputFieldColor = themeProvider.isDarkMode ? const Color(0xFF3D3D3D) : Colors.grey[200] ?? Colors.grey;
 
     return Center(
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         child: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: backgroundColor,
               borderRadius: BorderRadius.circular(15),
@@ -79,9 +82,9 @@ class _ListsWidgetState extends State<ListsWidget> {
                   showLocations && selectedList != null
                       ? 'Locations in ${selectedList!.name}'
                       : 'Lists',
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 showLocations && selectedList != null
                     ? _buildLocationList(selectedList!.locations, inputFieldColor)
                     : _buildList(owner.lists, inputFieldColor),
@@ -96,7 +99,7 @@ class _ListsWidgetState extends State<ListsWidget> {
   Widget _buildList(List<ListModel> lists, Color inputFieldColor) {
     return ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: lists.length,
       itemBuilder: (context, index) {
         final list = lists[index];
@@ -106,7 +109,7 @@ class _ListsWidgetState extends State<ListsWidget> {
             setState(() {
               showLocations = true;
               selectedList = list;
-              selectedLocation = null; // Clear selected location
+              selectedLocation = null;
             });
           },
         );
@@ -117,8 +120,8 @@ class _ListsWidgetState extends State<ListsWidget> {
   Widget _buildLocationList(List<Location> locations, Color inputFieldColor) {
     return Column(
       children: [
-        Container(
-          height: 300, // Set a fixed height to make the ListView scrollable
+        SizedBox(
+          height: 300,
           child: ListView.builder(
             shrinkWrap: true,
             itemCount: locations.length,
@@ -137,7 +140,7 @@ class _ListsWidgetState extends State<ListsWidget> {
           ),
         ),
         if (selectedLocation != null) _buildLocationDetail(selectedLocation!, inputFieldColor),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         ElevatedButton(
           onPressed: () {
             setState(() {
@@ -146,7 +149,7 @@ class _ListsWidgetState extends State<ListsWidget> {
               selectedLocation = null;
             });
           },
-          child: Text('Back to Lists'),
+          child: const Text('Back to Lists'),
         ),
       ],
     );
@@ -154,8 +157,8 @@ class _ListsWidgetState extends State<ListsWidget> {
 
   Widget _buildLocationDetail(Location location, Color inputFieldColor) {
     return Container(
-      margin: EdgeInsets.only(top: 20),
-      padding: EdgeInsets.all(20),
+      margin: const EdgeInsets.only(top: 20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: inputFieldColor,
         borderRadius: BorderRadius.circular(15),
@@ -163,27 +166,27 @@ class _ListsWidgetState extends State<ListsWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Name: ${location.name}', style: TextStyle(fontSize: 16)),
-          Text('Latitude: ${location.latitude}', style: TextStyle(fontSize: 16)),
-          Text('Longitude: ${location.longitude}', style: TextStyle(fontSize: 16)),
+          Text('Name: ${location.name}', style: const TextStyle(fontSize: 16)),
+          Text('Latitude: ${location.latitude}', style: const TextStyle(fontSize: 16)),
+          Text('Longitude: ${location.longitude}', style: const TextStyle(fontSize: 16)),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               ElevatedButton(
                 onPressed: () => _deleteLocation(location),
-                child: Icon(Icons.delete),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                 ),
+                child: const Icon(Icons.delete),
               ),
               ElevatedButton(
                 onPressed: () {
                   widget.onShowLocation(LatLng(location.latitude, location.longitude));
                 },
-                child: Icon(Icons.location_on),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                 ),
+                child: const Icon(Icons.location_on),
               ),
             ],
           ),
@@ -201,9 +204,8 @@ class _ListsWidgetState extends State<ListsWidget> {
         }
       });
       await locationService.saveOwner(owner);
-      // Close overlay if all locations are removed
       if (owner.lists.isEmpty) {
-        Navigator.pop(context);  // Close the overlay
+        Navigator.pop(context);
       }
     }
   }

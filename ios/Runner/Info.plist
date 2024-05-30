@@ -45,5 +45,20 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+
+	<!-- Standortberechtigungen -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Wir benötigen Ihren Standort, um Ihnen ortsbezogene Funktionen anbieten zu können.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Wir benötigen Ihren Standort, um Ihnen ortsbezogene Funktionen anbieten zu können, auch wenn die App im Hintergrund läuft.</string>
+
+	<!-- Berechtigungen für den Zugriff auf die Kamera und den Speicher -->
+	<key>NSCameraUsageDescription</key>
+	<string>Wir benötigen Zugriff auf die Kamera, um Fotos aufzunehmen.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Wir benötigen Zugriff auf Ihre Fotobibliothek, um Fotos hochzuladen.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Wir benötigen Zugriff auf Ihre Fotobibliothek, um Fotos hinzuzufügen.</string>
+
 </dict>
 </plist>

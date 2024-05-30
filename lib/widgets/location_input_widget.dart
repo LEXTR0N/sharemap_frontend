@@ -1,16 +1,18 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import '../models/location_model.dart';
 import '../providers/theme_provider.dart';
 import '../services/save_location_service.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/home_screen/home_bloc.dart';
 
 class LocationInputWidget extends StatefulWidget {
   final TextEditingController latitudeController = TextEditingController();
   final TextEditingController longitudeController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
+
+  LocationInputWidget({super.key});
 
   @override
   _LocationInputWidgetState createState() => _LocationInputWidgetState();
@@ -21,7 +23,6 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
   String? selectedItem;
   final SaveLocationService locationService = SaveLocationService();
   Owner owner = Owner(lists: []);
-
 
   @override
   void initState() {
@@ -42,13 +43,13 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final backgroundColor = themeProvider.isDarkMode ? Color(0xFF212121) : Colors.white;
-    final inputFieldColor = themeProvider.isDarkMode ? Color(0xFF3D3D3D) : Colors.grey[200];
-    final buttonColor = themeProvider.isDarkMode ? Color(0xFF3D3D3D) : Colors.grey[300];
+    final backgroundColor = themeProvider.isDarkMode ? const Color(0xFF212121) : Colors.white;
+    final inputFieldColor = themeProvider.isDarkMode ? const Color(0xFF3D3D3D) : Colors.grey[200];
+    final buttonColor = themeProvider.isDarkMode ? const Color(0xFF3D3D3D) : Colors.grey[300];
 
     return Center(
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         child: SingleChildScrollView(
           child: ConstrainedBox(
             constraints: BoxConstraints(
@@ -56,7 +57,7 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
             ),
             child: IntrinsicHeight(
               child: Container(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: backgroundColor,
                   borderRadius: BorderRadius.circular(15),
@@ -65,7 +66,7 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Name:', style: TextStyle(fontSize: 16)),
+                    const Text('Name:', style: TextStyle(fontSize: 16)),
                     SizedBox(
                       height: 60,
                       child: TextField(
@@ -81,7 +82,7 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Row(
                       children: [
                         Expanded(
@@ -113,23 +114,23 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.add),
+                          icon: const Icon(Icons.add),
                           onPressed: _showAddItemDialog,
                         ),
                       ],
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: buttonColor,
-                        padding: EdgeInsets.symmetric(vertical: 15),
-                        textStyle: TextStyle(fontSize: 16),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        textStyle: const TextStyle(fontSize: 16),
                       ),
                       onPressed: _getCurrentLocation,
-                      child: Text('Current Location'),
+                      child: const Text('Current Location'),
                     ),
-                    SizedBox(height: 20),
-                    Text('Latitude:', style: TextStyle(fontSize: 16)),
+                    const SizedBox(height: 20),
+                    const Text('Latitude:', style: TextStyle(fontSize: 16)),
                     SizedBox(
                       height: 60,
                       child: TextField(
@@ -146,8 +147,8 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 10),
-                    Text('Longitude:', style: TextStyle(fontSize: 16)),
+                    const SizedBox(height: 10),
+                    const Text('Longitude:', style: TextStyle(fontSize: 16)),
                     SizedBox(
                       height: 60,
                       child: TextField(
@@ -164,19 +165,19 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 15),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
                         backgroundColor: Colors.blue.withOpacity(0.6),
-                        textStyle: TextStyle(
+                        textStyle: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
                         ),
                       ),
                       onPressed: _saveLocation,
-                      child: Text('Save'),
+                      child: const Text('Save'),
                     ),
                   ],
                 ),
@@ -198,7 +199,9 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
         widget.longitudeController.text = position.longitude.toString();
       });
     } catch (e) {
-      print("Error getting current location: $e");
+      if (kDebugMode) {
+        print("Error getting current location: $e");
+      }
     }
   }
 
@@ -208,7 +211,7 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
         widget.longitudeController.text.isEmpty ||
         selectedItem == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Please fill in all fields'),
           backgroundColor: Colors.red,
         ),
@@ -219,7 +222,7 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
     if (double.tryParse(widget.latitudeController.text) == null ||
         double.tryParse(widget.longitudeController.text) == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Latitude and Longitude must be valid numbers'),
           backgroundColor: Colors.red,
         ),
@@ -246,7 +249,9 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
     }
 
     locationService.saveOwner(owner).then((_) {
-      print('Location successfully saved!');
+      if (kDebugMode) {
+        print('Location successfully saved!');
+      }
       context.read<HomeBloc>().add(HomeInitialEvent()); // Close the widget
     });
   }
@@ -257,7 +262,7 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Add New Item'),
+          title: const Text('Add New Item'),
           content: TextField(
             onChanged: (value) {
               newItem = value;
@@ -265,11 +270,11 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
           ),
           actions: [
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () => Navigator.pop(context),
             ),
             TextButton(
-              child: Text('Add'),
+              child: const Text('Add'),
               onPressed: () {
                 if (newItem.isNotEmpty) {
                   setState(() {

@@ -10,4 +10,3 @@ class HomeError extends HomeState {
   final String error;
   HomeError({required this.error});
 }
-

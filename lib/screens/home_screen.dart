@@ -11,6 +11,8 @@ import '../widgets/bottom_nav_item.dart';
 import '../widgets/location_input_widget.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -27,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final backgroundColor = themeProvider.isDarkMode ? Color(0xFF212121) : Colors.white;
+    final backgroundColor = themeProvider.isDarkMode ? const Color(0xFF212121) : Colors.white;
 
     return BlocProvider(
       create: (context) => HomeBloc(),
@@ -42,16 +44,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   top: 40.0,
                   right: 16.0,
                   child: SizedBox(
-                    height: 65.0, // Adjust the size as needed
-                    width: 65.0,  // Adjust the size as needed
+                    height: 65.0,
+                    width: 65.0,
                     child: FloatingActionButton(
-                      heroTag: 'settingsFAB', // Provide a unique heroTag
+                      heroTag: 'settingsFAB',
                       onPressed: () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SettingsScreen()),
+                        MaterialPageRoute(builder: (context) => const SettingsScreen()),
                       ),
-                      child: Icon(Icons.settings),
                       backgroundColor: backgroundColor,
+                      child: const Icon(Icons.settings),
                     ),
                   ),
                 ),
@@ -66,8 +68,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: GestureDetector(
                     onTap: () => context.read<HomeBloc>().add(
                       state is LocationSelectedState
-                          ? HomeInitialEvent() // Zurück zum initialen Zustand
-                          : LocationSelected(), // Standort ausgewählt
+                          ? HomeInitialEvent()
+                          : LocationSelected(),
                     ),
                     child: BottomNavItem(
                       icon: Icons.location_on,
@@ -80,8 +82,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: GestureDetector(
                     onTap: () => context.read<HomeBloc>().add(
                       state is ListSelectedState
-                          ? HomeInitialEvent() // Zurück zum initialen Zustand
-                          : ListSelected(), // Liste ausgewählt
+                          ? HomeInitialEvent()
+                          : ListSelected(),
                     ),
                     child: BottomNavItem(
                       icon: Icons.menu,
@@ -102,12 +104,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildOverlayContent(BuildContext context, HomeState state) {
     return Positioned.fill(
       child: Container(
-        color: Colors.black.withOpacity(0.5), // Halbtransparenter grauer Hintergrund
-        padding: EdgeInsets.all(20),
-        child: Center( // Zentriere den Inhalt horizontal
+        color: Colors.black.withOpacity(0.5),
+        padding: const EdgeInsets.all(20),
+        child: Center(
           child: state is LocationSelectedState
               ? LocationInputWidget()
-              : ListsWidget(onShowLocation: _showSelectedLocation), // Verwende ListsWidget für den Listen-Zustand
+              : ListsWidget(onShowLocation: _showSelectedLocation),
         ),
       ),
     );

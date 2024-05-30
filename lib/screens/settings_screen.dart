@@ -1,36 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/theme_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
+
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  String _language = 'English';
 
   @override
   void initState() {
     super.initState();
-    _loadPreferences();
   }
 
-  Future<void> _loadPreferences() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _language = prefs.getString('language') ?? 'English';
-    });
-  }
-
-  Future<void> _setLanguage(String value) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('language', value);
-    setState(() {
-      _language = value;
-    });
-  }
 
   void _showContactDetails() {
     showModalBottomSheet(
@@ -43,18 +28,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  const Text(
                     'Jonas Eck',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 8.0),
-                  Text(
+                  const SizedBox(height: 8.0),
+                  const Text(
                     'jonas.eck@study.thws.de',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 16.0),
                   ),
-                  SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
                   Image.asset('assets/images/Profilpicture.jpeg'), // Correct path
                 ],
               ),
@@ -70,7 +55,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
+        title: const Text('Settings'),
       ),
       body: SingleChildScrollView( // Make the settings page scrollable
         padding: const EdgeInsets.all(16.0),
@@ -78,7 +63,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ListTile(
-              title: Text('Darkmode'),
+              title: const Text('Darkmode'),
               trailing: Switch(
                 value: themeProvider.isDarkMode,
                 onChanged: (value) {
@@ -87,7 +72,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             ListTile(
-              title: Text('Contact'),
+              title: const Text('Contact'),
               onTap: _showContactDetails,
             ),
           ],

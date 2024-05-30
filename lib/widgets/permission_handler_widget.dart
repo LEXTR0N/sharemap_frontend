@@ -4,7 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 class PermissionHandlerWidget extends StatefulWidget {
   final Widget child;
 
-  const PermissionHandlerWidget({Key? key, required this.child}) : super(key: key);
+  const PermissionHandlerWidget({super.key, required this.child});
 
   @override
   _PermissionHandlerWidgetState createState() => _PermissionHandlerWidgetState();
@@ -29,7 +29,7 @@ class _PermissionHandlerWidgetState extends State<PermissionHandlerWidget> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return Scaffold(
+      return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
         ),

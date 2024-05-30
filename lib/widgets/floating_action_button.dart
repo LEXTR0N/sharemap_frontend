@@ -6,13 +6,13 @@ import '../providers/theme_provider.dart';
 class FloatingActionButtonWidget extends StatelessWidget {
   final IconData icon;
 
-  const FloatingActionButtonWidget({required this.icon});
+  const FloatingActionButtonWidget({super.key, required this.icon});
 
   @override
   Widget build(BuildContext context) {
 
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final backgroundColor = themeProvider.isDarkMode ? Color(0xFF212121) : Colors.white;
+    final backgroundColor = themeProvider.isDarkMode ? const Color(0xFF212121) : Colors.white;
 
     return Container(
       width: 70,

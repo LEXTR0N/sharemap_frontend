@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import '../models/location_model.dart';
 
@@ -15,7 +16,9 @@ class SaveLocationService {
 
     final jsonString = jsonEncode(owner.toJson());
     await file.writeAsString(jsonString);
-    print('Location successfully saved!');
+    if (kDebugMode) {
+      print('Location successfully saved!');
+    }
   }
 
   Future<Owner?> loadOwner() async {
@@ -29,7 +32,9 @@ class SaveLocationService {
         return Owner.fromJson(jsonMap);
       }
     } catch (e) {
-      print('Error loading owner data: $e');
+      if (kDebugMode) {
+        print('Error loading owner data: $e');
+      }
     }
     return null;
   }

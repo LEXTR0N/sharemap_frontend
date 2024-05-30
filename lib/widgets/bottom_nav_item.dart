@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../providers/theme_provider.dart';
 
 class BottomNavItem extends StatelessWidget {
@@ -9,6 +8,7 @@ class BottomNavItem extends StatelessWidget {
   final bool isSelected;
 
   const BottomNavItem({
+    super.key,
     required this.icon,
     required this.text,
     required this.isSelected,
@@ -16,9 +16,9 @@ class BottomNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final backgroundColor = themeProvider.isDarkMode ? Color(0xFF212121) : Colors.white;
+    final backgroundColor =
+        themeProvider.isDarkMode ? const Color(0xFF212121) : Colors.white;
 
     return Container(
       width: 70,
@@ -31,10 +31,9 @@ class BottomNavItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Icon(icon),
-          Text(text, style: TextStyle(fontSize: 12.0)),
+          Text(text, style: const TextStyle(fontSize: 12.0)),
         ],
       ),
     );
   }
 }
-

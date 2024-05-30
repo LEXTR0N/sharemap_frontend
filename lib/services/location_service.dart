@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 
 class LocationService {
@@ -23,13 +24,17 @@ class LocationService {
     }
 
     Position position = await Geolocator.getCurrentPosition();
-    print('Current POSITION: ${position.latitude}, ${position.longitude}');
+    if (kDebugMode) {
+      print('Current POSITION: ${position.latitude}, ${position.longitude}');
+    }
     return position;
   }
 
   Stream<Position?> getPositionStream() {
     return Geolocator.getPositionStream().handleError((error) {
-      print('Location stream error: $error');
+      if (kDebugMode) {
+        print('Location stream error: $error');
+      }
       return null; // Return null on error
     });
   }
