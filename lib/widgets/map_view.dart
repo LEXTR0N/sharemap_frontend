@@ -21,7 +21,6 @@ class _MapViewState extends State<MapView> {
   LatLng? _currentLocation; // Store current location
   MapController _mapController = MapController();
   bool _mapInitialized = false; // Flag to check if the map has been centered initially
-  LatLng? _selectedLocation; // Add this variable
 
   @override
   void initState() {
@@ -49,16 +48,9 @@ class _MapViewState extends State<MapView> {
   @override
   void didUpdateWidget(MapView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.selectedLocation != null && widget.selectedLocation != _selectedLocation) {
-      showSelectedLocation(widget.selectedLocation!);
+    if (widget.selectedLocation != null && widget.selectedLocation != oldWidget.selectedLocation) {
+      _mapController.move(widget.selectedLocation!, 15.0);
     }
-  }
-
-  void showSelectedLocation(LatLng location) {
-    setState(() {
-      _selectedLocation = location;
-    });
-    _mapController.move(_selectedLocation!, 15.0);
   }
 
   @override
@@ -74,21 +66,33 @@ class _MapViewState extends State<MapView> {
         ? "https://api.tomtom.com/map/1/tile/basic/night/{z}/{x}/{y}.png?key=$apiKey"
         : "https://api.tomtom.com/map/1/tile/basic/main/{z}/{x}/{y}.png?key=$apiKey";
 
-    return FlutterMap(
-      mapController: _mapController,
-      options: MapOptions(
-        center: _selectedLocation ?? _currentLocation ?? initialLocation,
-        zoom: 13.0,
+    return Scaffold(
+      body: FlutterMap(
+        mapController: _mapController,
+        options: MapOptions(
+          center: _currentLocation ?? initialLocation,
+          zoom: 13.0,
+        ),
+        children: [
+          TileLayer(
+            urlTemplate: tileLayerUrl,
+            additionalOptions: {"apiKey": apiKey},
+          ),
+          MarkerLayer(
+            markers: _buildMarkers(),
+          ),
+        ],
       ),
-      children: [
-        TileLayer(
-          urlTemplate: tileLayerUrl,
-          additionalOptions: {"apiKey": apiKey},
-        ),
-        MarkerLayer(
-          markers: _buildMarkers(),
-        ),
-      ],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          if (_currentLocation != null) {
+            _mapController.move(_currentLocation!, 13.0);
+          }
+        },
+        child: Icon(Icons.my_location),
+        backgroundColor: backgroundColor,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -101,9 +105,9 @@ class _MapViewState extends State<MapView> {
           height: 80,
           child: Icon(Icons.person_pin_circle, size: 40, color: Colors.blue),
         ),
-      if (_selectedLocation != null)
+      if (widget.selectedLocation != null)
         Marker(
-          point: _selectedLocation!,
+          point: widget.selectedLocation!,
           width: 80,
           height: 80,
           child: Icon(Icons.location_on, size: 40, color: Colors.red),

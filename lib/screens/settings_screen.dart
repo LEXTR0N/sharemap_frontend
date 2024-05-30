@@ -32,45 +32,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
-  void _showLanguageSelector() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return ListView(
-          children: [
-            ListTile(
-              title: Text('English'),
-              onTap: () {
-                _setLanguage('English');
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('Deutsch'),
-              onTap: () {
-                _setLanguage('Deutsch');
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('Français'),
-              onTap: () {
-                _setLanguage('Français');
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('Español'),
-              onTap: () {
-                _setLanguage('Español');
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   void _showExampleText() {
     showModalBottomSheet(
@@ -110,11 +71,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   themeProvider.toggleTheme(value);
                 },
               ),
-            ),
-            ListTile(
-              title: Text('Language'),
-              subtitle: Text(_language),
-              onTap: _showLanguageSelector,
             ),
             ListTile(
               title: Text('Contact'),

@@ -21,7 +21,7 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
   String? selectedItem;
   final SaveLocationService locationService = SaveLocationService();
   Owner owner = Owner(lists: []);
-  List<String> photos = [];
+
 
   @override
   void initState() {
@@ -231,7 +231,6 @@ class _LocationInputWidgetState extends State<LocationInputWidget> {
       name: widget.nameController.text,
       latitude: double.parse(widget.latitudeController.text),
       longitude: double.parse(widget.longitudeController.text),
-      photos: photos,
     );
 
     final listIndex = owner.lists.indexWhere((list) => list.name == selectedItem);

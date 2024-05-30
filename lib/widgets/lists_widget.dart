@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:latlong2/latlong.dart'; // Importieren des latlong2-Pakets
+import 'package:latlong2/latlong.dart'; // Importing the latlong2 package
 import '../models/location_model.dart';
 import '../providers/theme_provider.dart';
+import '../services/capitals_service.dart';
 import '../services/save_location_service.dart';
 
 class ListsWidget extends StatefulWidget {
@@ -16,6 +17,7 @@ class ListsWidget extends StatefulWidget {
 
 class _ListsWidgetState extends State<ListsWidget> {
   final SaveLocationService locationService = SaveLocationService();
+  final CapitalsService capitalsService = CapitalsService();
   Owner owner = Owner(lists: []);
   bool showLocations = false;
   ListModel? selectedList;
@@ -24,7 +26,12 @@ class _ListsWidgetState extends State<ListsWidget> {
   @override
   void initState() {
     super.initState();
-    _loadOwner();
+    _initializeData();
+  }
+
+  Future<void> _initializeData() async {
+    await _loadOwner();
+    await _loadCapitals();
   }
 
   Future<void> _loadOwner() async {
@@ -33,6 +40,18 @@ class _ListsWidgetState extends State<ListsWidget> {
       setState(() {
         owner = loadedOwner;
       });
+    }
+  }
+
+  Future<void> _loadCapitals() async {
+    try {
+      List<Location> capitals = await capitalsService.fetchEuropeanCapitals();
+      ListModel europeanCapitals = ListModel(name: 'European Capitals', locations: capitals);
+      setState(() {
+        owner.lists.add(europeanCapitals);
+      });
+    } catch (e) {
+      print(e.toString());
     }
   }
 
@@ -77,6 +96,7 @@ class _ListsWidgetState extends State<ListsWidget> {
   Widget _buildList(List<ListModel> lists, Color inputFieldColor) {
     return ListView.builder(
       shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
       itemCount: lists.length,
       itemBuilder: (context, index) {
         final list = lists[index];
@@ -97,21 +117,24 @@ class _ListsWidgetState extends State<ListsWidget> {
   Widget _buildLocationList(List<Location> locations, Color inputFieldColor) {
     return Column(
       children: [
-        ListView.builder(
-          shrinkWrap: true,
-          itemCount: locations.length,
-          itemBuilder: (context, index) {
-            final location = locations[index];
-            return ListTile(
-              title: Text(location.name),
-              subtitle: Text('Latitude: ${location.latitude}, Longitude: ${location.longitude}'),
-              onTap: () {
-                setState(() {
-                  selectedLocation = location;
-                });
-              },
-            );
-          },
+        Container(
+          height: 300, // Set a fixed height to make the ListView scrollable
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: locations.length,
+            itemBuilder: (context, index) {
+              final location = locations[index];
+              return ListTile(
+                title: Text(location.name),
+                subtitle: Text('Latitude: ${location.latitude}, Longitude: ${location.longitude}'),
+                onTap: () {
+                  setState(() {
+                    selectedLocation = location;
+                  });
+                },
+              );
+            },
+          ),
         ),
         if (selectedLocation != null) _buildLocationDetail(selectedLocation!, inputFieldColor),
         SizedBox(height: 20),
@@ -148,7 +171,7 @@ class _ListsWidgetState extends State<ListsWidget> {
             children: [
               ElevatedButton(
                 onPressed: () => _deleteLocation(location),
-                child: Text('Delete'),
+                child: Icon(Icons.delete),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                 ),

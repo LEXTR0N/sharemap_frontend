@@ -44,28 +44,29 @@ class Location {
   String name;
   double latitude;
   double longitude;
-  List<String> photos;
 
   Location({
     required this.name,
     required this.latitude,
     required this.longitude,
-    required this.photos,
   });
 
   Map<String, dynamic> toJson() => {
     'name': name,
     'latitude': latitude,
     'longitude': longitude,
-    'photos': photos,
   };
 
   factory Location.fromJson(Map<String, dynamic> json) {
     return Location(
-      name: json['name'],
-      latitude: json['latitude'],
-      longitude: json['longitude'],
-      photos: List<String>.from(json['photos']),
+      name: json['name'] ?? json['properties']['capital'],
+      latitude: (json['latitude'] ?? json['geometry']['coordinates'][1] as num).toDouble(),
+      longitude: (json['longitude'] ?? json['geometry']['coordinates'][0] as num).toDouble(),
     );
   }
 }
+
+
+
+
+
