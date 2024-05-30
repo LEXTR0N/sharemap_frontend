@@ -45,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     height: 65.0, // Adjust the size as needed
                     width: 65.0,  // Adjust the size as needed
                     child: FloatingActionButton(
+                      heroTag: 'settingsFAB', // Provide a unique heroTag
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => SettingsScreen()),

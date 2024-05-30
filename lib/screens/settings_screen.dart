@@ -32,18 +32,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
-
-  void _showExampleText() {
+  void _showContactDetails() {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'This is an example text displayed in a modal bottom sheet.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16.0),
+        return SingleChildScrollView( // Make the modal bottom sheet scrollable
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Jonas Eck',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8.0),
+                  Text(
+                    'jonas.eck@study.thws.de',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                  SizedBox(height: 16.0),
+                  Image.asset('assets/images/Profilpicture.jpeg'), // Correct path
+                ],
+              ),
             ),
           ),
         );
@@ -58,7 +72,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(
         title: Text('Settings'),
       ),
-      body: Padding(
+      body: SingleChildScrollView( // Make the settings page scrollable
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,7 +88,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             ListTile(
               title: Text('Contact'),
-              onTap: _showExampleText,
+              onTap: _showContactDetails,
             ),
           ],
         ),
